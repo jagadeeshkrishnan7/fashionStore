@@ -163,17 +163,28 @@ router.put('/update/:id', uploadProductImage.array('images', 5), (req, res) => {
     } else if (req.body.images) {
       // Handle images passed as string array
       imageUrls = Array.isArray(req.body.images) 
-        ? req.body.images.filter(img => img) // Filter out empty strings
+        ? req.body.images.filter(img => img)
         : [req.body.images].filter(img => img);
+    }
+
+    // Validate and convert price and stock
+    const parsedPrice = price && price.trim() ? parseFloat(price) : existingProduct.price;
+    const parsedStock = stock && stock.toString().trim() ? parseInt(stock) : existingProduct.stock;
+
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      return res.status(400).json({ error: 'Invalid price value' });
+    }
+    if (isNaN(parsedStock) || parsedStock < 0) {
+      return res.status(400).json({ error: 'Invalid stock value' });
     }
 
     const updatedProduct = {
       id: existingProduct.id,
-      name: name || existingProduct.name,
-      description: description || existingProduct.description,
-      price: price !== undefined ? parseFloat(price) : existingProduct.price,
-      category: category || existingProduct.category,
-      stock: stock !== undefined ? parseInt(stock) : existingProduct.stock,
+      name: name && name.trim() ? name : existingProduct.name,
+      description: description && description.trim() ? description : existingProduct.description,
+      price: parsedPrice,
+      category: category && category.trim() ? category : existingProduct.category,
+      stock: parsedStock,
       images: imageUrls && imageUrls.length > 0 ? imageUrls : existingProduct.images || [],
       image: (imageUrls && imageUrls.length > 0 ? imageUrls[0] : existingProduct.image) || '',
       createdAt: existingProduct.createdAt,

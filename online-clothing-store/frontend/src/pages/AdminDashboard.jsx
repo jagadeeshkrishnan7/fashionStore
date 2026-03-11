@@ -166,13 +166,14 @@ const AdminDashboard = () => {
     setEditingOrder(null);
   };
 
-  const handleClearPayment = async (id) => {
-    if (window.confirm('Remove payment screenshot and set status back to pending?')) {
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
       try {
-        await api.put(`/admin/orders/${id}`, { clearPayment: true });
+        await api.delete(`/admin/orders/${orderId}`);
         loadOrders();
-      } catch (err) {
-        alert('Error clearing payment: ' + err.message);
+        alert('Order deleted successfully');
+      } catch (error) {
+        alert('Error deleting order: ' + error.message);
       }
     }
   };
@@ -972,6 +973,12 @@ const AdminDashboard = () => {
                               Remove Payment
                             </button>
                           )}
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            className="bg-red-700 text-white px-3 py-1 rounded text-sm hover:bg-red-800 font-bold"
+                          >
+                            Delete Order
+                          </button>
                         </td>
                       </tr>
                     ))}
