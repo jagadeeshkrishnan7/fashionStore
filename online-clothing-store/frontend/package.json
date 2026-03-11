@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://jagadeeshkrishnan7.github.io/fashionStore/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
