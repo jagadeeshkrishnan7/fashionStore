@@ -55,6 +55,28 @@ const writeProducts = (products) => {
   fs.writeFileSync(dataPath, JSON.stringify(products, null, 2));
 };
 
+// Store product images metadata
+const storeProductImagesMetadata = (productId, images) => {
+  try {
+    const metadataDir = path.join(__dirname, '../data/product-images');
+    fs.mkdirSync(metadataDir, { recursive: true });
+    const metadataPath = path.join(metadataDir, `${productId}.json`);
+    const metadata = {
+      productId,
+      images: images.map((img, idx) => ({
+        index: idx + 1,
+        url: img,
+        uploadedAt: new Date().toISOString()
+      })),
+      updatedAt: new Date().toISOString()
+    };
+    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+    return metadata;
+  } catch (error) {
+    console.error('Error storing image metadata:', error);
+  }
+};
+
 // GET all products
 router.get('/', (req, res) => {
   const products = readProducts();
@@ -91,8 +113,9 @@ router.post('/add', uploadProductImage.array('images', 5), (req, res) => {
     }
 
     const products = readProducts();
+    const productId = Date.now();
     const newProduct = {
-      id: Date.now(),
+      id: productId,
       name,
       description: description || '',
       price: parseFloat(price),
@@ -106,9 +129,13 @@ router.post('/add', uploadProductImage.array('images', 5), (req, res) => {
 
     products.push(newProduct);
     writeProducts(products);
+    if (imageUrls.length > 0) {
+      storeProductImagesMetadata(productId, imageUrls);
+    }
     res.status(201).json(newProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add product' });
+    console.error('Add product error:', error);
+    res.status(500).json({ error: 'Failed to add product: ' + error.message });
   }
 });
 
@@ -116,54 +143,64 @@ router.post('/add', uploadProductImage.array('images', 5), (req, res) => {
 router.put('/update/:id', uploadProductImage.array('images', 5), (req, res) => {
   try {
     const { name, description, price, category, stock } = req.body;
-    let imageUrls;
-
-    if (req.files && req.files.length > 0) {
-      imageUrls = req.files.map(file => 
-        makeUrl(req, `/images/products/${file.filename}`)
-      );
-    } else if (req.body.images) {
-      imageUrls = Array.isArray(req.body.images) 
-        ? req.body.images 
-        : [req.body.images];
-    }
-
+    const productId = parseInt(req.params.id);
+    
     const products = readProducts();
-    const index = products.findIndex(p => p.id == req.params.id);
+    const index = products.findIndex(p => p.id == productId);
 
     if (index === -1) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
+    const existingProduct = products[index];
+    let imageUrls = existingProduct.images || [];
+
+    // Handle new image uploads
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map(file => 
+        makeUrl(req, `/images/products/${file.filename}`)
+      );
+    } else if (req.body.images) {
+      // Handle images passed as string array
+      imageUrls = Array.isArray(req.body.images) 
+        ? req.body.images.filter(img => img) // Filter out empty strings
+        : [req.body.images].filter(img => img);
+    }
+
     const updatedProduct = {
-      ...products[index],
-      name: name || products[index].name,
-      description: description || products[index].description,
-      price: price !== undefined ? parseFloat(price) : products[index].price,
-      category: category || products[index].category,
-      stock: stock !== undefined ? stock : products[index].stock,
+      id: existingProduct.id,
+      name: name || existingProduct.name,
+      description: description || existingProduct.description,
+      price: price !== undefined ? parseFloat(price) : existingProduct.price,
+      category: category || existingProduct.category,
+      stock: stock !== undefined ? parseInt(stock) : existingProduct.stock,
+      images: imageUrls && imageUrls.length > 0 ? imageUrls : existingProduct.images || [],
+      image: (imageUrls && imageUrls.length > 0 ? imageUrls[0] : existingProduct.image) || '',
+      createdAt: existingProduct.createdAt,
       updatedAt: new Date().toISOString()
     };
 
-    // Update images if provided
-    if (imageUrls && imageUrls.length > 0) {
-      updatedProduct.images = imageUrls;
-      updatedProduct.image = imageUrls[0]; // Keep backward compatibility
-    }
-
     products[index] = updatedProduct;
     writeProducts(products);
-    res.json(products[index]);
+    
+    // Store image metadata if images exist
+    if (updatedProduct.images && updatedProduct.images.length > 0) {
+      storeProductImagesMetadata(productId, updatedProduct.images);
+    }
+    
+    res.json(updatedProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update product' });
+    console.error('Update product error:', error);
+    res.status(500).json({ error: 'Failed to update product: ' + error.message });
   }
 });
 
 // DELETE product (admin)
 router.delete('/delete/:id', (req, res) => {
   try {
+    const productId = parseInt(req.params.id);
     const products = readProducts();
-    const index = products.findIndex(p => p.id == req.params.id);
+    const index = products.findIndex(p => p.id == productId);
 
     if (index === -1) {
       return res.status(404).json({ error: 'Product not found' });
@@ -171,6 +208,17 @@ router.delete('/delete/:id', (req, res) => {
 
     const deleted = products.splice(index, 1);
     writeProducts(products);
+    
+    // Clean up metadata file
+    try {
+      const metadataPath = path.join(__dirname, '../data/product-images', `${productId}.json`);
+      if (fs.existsSync(metadataPath)) {
+        fs.unlinkSync(metadataPath);
+      }
+    } catch (err) {
+      console.error('Error deleting metadata:', err);
+    }
+    
     res.json({ message: 'Product deleted', product: deleted[0] });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete product' });

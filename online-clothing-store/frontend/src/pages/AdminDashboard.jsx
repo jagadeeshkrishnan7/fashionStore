@@ -38,6 +38,11 @@ const AdminDashboard = () => {
     category: '',
     image: '',
     stock: '',
+    image1: null,
+    image2: null,
+    image3: null,
+    image4: null,
+    image5: null,
     files: []
   });
   const [categoryForm, setCategoryForm] = useState({ name: '', icon: '', image: '', file: null });
@@ -178,15 +183,16 @@ const AdminDashboard = () => {
     try {
       const formData = new FormData();
       Object.entries(productForm).forEach(([key, value]) => {
-        if (key === 'files') return;
+        if (key === 'image1' || key === 'image2' || key === 'image3' || key === 'image4' || key === 'image5' || key === 'files') return;
         formData.append(key, value);
       });
-      // Add multiple files
-      if (productForm.files && productForm.files.length > 0) {
-        productForm.files.forEach((file) => {
-          formData.append('images', file);
-        });
-      }
+      
+      // Add images from 5 separate upload fields
+      const imageFiles = [productForm.image1, productForm.image2, productForm.image3, productForm.image4, productForm.image5].filter(f => f);
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+      
       await addProduct(formData);
       setProductForm({
         name: '',
@@ -195,11 +201,17 @@ const AdminDashboard = () => {
         category: '',
         image: '',
         stock: '',
+        image1: null,
+        image2: null,
+        image3: null,
+        image4: null,
+        image5: null,
         files: []
       });
       loadData();
       alert('Product added successfully!');
     } catch (error) {
+      console.error('Add error:', error);
       alert('Error adding product: ' + error.message);
     }
   };
@@ -209,15 +221,16 @@ const AdminDashboard = () => {
     try {
       const formData = new FormData();
       Object.entries(productForm).forEach(([key, value]) => {
-        if (key === 'files') return;
+        if (key === 'files' || key === 'image1' || key === 'image2' || key === 'image3' || key === 'image4' || key === 'image5') return;
         formData.append(key, value);
       });
-      // Add multiple files
-      if (productForm.files && productForm.files.length > 0) {
-        productForm.files.forEach((file) => {
-          formData.append('images', file);
-        });
-      }
+      
+      // Add images from 5 separate upload fields
+      const imageFiles = [productForm.image1, productForm.image2, productForm.image3, productForm.image4, productForm.image5].filter(f => f);
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+      
       await updateProduct(editingProduct.id, formData);
       setProductForm({
         name: '',
@@ -226,12 +239,18 @@ const AdminDashboard = () => {
         category: '',
         image: '',
         stock: '',
+        image1: null,
+        image2: null,
+        image3: null,
+        image4: null,
+        image5: null,
         files: []
       });
       setEditingProduct(null);
       loadData();
       alert('Product updated successfully!');
     } catch (error) {
+      console.error('Update error:', error);
       alert('Error updating product: ' + error.message);
     }
   };
@@ -440,58 +459,51 @@ const AdminDashboard = () => {
                       </option>
                     ))}
                   </select>
-                  {/* preview current or selected images */}
-                  {(productForm.image || productForm.files.length > 0) && (
-                    <div className="md:col-span-2">
-                      <p className="text-sm font-medium mb-2">Image Previews (Up to 5):</p>
-                      <div className="flex gap-2 flex-wrap">
-                        {/* Show selected images */}
-                        {productForm.files.map((file, idx) => (
-                          <div key={idx} className="relative">
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`preview ${idx + 1}`}
-                              className="w-24 h-24 object-cover rounded"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newFiles = productForm.files.filter((_, i) => i !== idx);
-                                setProductForm({ ...productForm, files: newFiles });
-                              }}
-                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                            >
-                              ✕
-                            </button>
-                            <span className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded-tr">{idx + 1}</span>
+                  {/* 5 Separate Image Upload Fields */}
+                  <div className="md:col-span-2">
+                    <p className="text-sm font-medium mb-3">📁 Upload Images (Upload up to 5 images - leave empty to skip):</p>
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4, 5].map((num) => {
+                        const fieldName = `image${num}`;
+                        const imageFile = productForm[fieldName];
+                        return (
+                          <div key={num} className="p-3 bg-white border rounded-lg">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Image {num}</label>
+                            <div className="flex gap-3 items-end">
+                              <div className="flex-1">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    setProductForm({ ...productForm, [fieldName]: file });
+                                  }}
+                                  className="w-full px-3 py-2 border rounded text-sm"
+                                />
+                              </div>
+                              {imageFile && (
+                                <div className="flex items-center gap-2">
+                                  <img
+                                    src={URL.createObjectURL(imageFile)}
+                                    alt={`preview ${num}`}
+                                    className="w-16 h-16 object-cover rounded border"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setProductForm({ ...productForm, [fieldName]: null })}
+                                    className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        ))}
-                        {/* Show existing image if editing */}
-                        {editingProduct && productForm.image && productForm.files.length === 0 && (
-                          <div>
-                            <img
-                              src={productForm.image + (editingProduct.updatedAt ? `?v=${new Date(editingProduct.updatedAt).getTime()}` : '')}
-                              alt="current"
-                              className="w-24 h-24 object-cover rounded border-2 border-blue-500"
-                            />
-                            <span className="text-xs text-gray-600">Current</span>
-                          </div>
-                        )}
-                      </div>
+                        );
+                      })}
                     </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []).slice(0, 5);
-                      setProductForm({ ...productForm, files });
-                    }}
-                    className="px-3 py-2 border rounded md:col-span-2"
-                    placeholder="Select up to 5 images"
-                  />
-                  <p className="text-xs text-gray-600 md:col-span-2">Upload up to 5 images for the product (PNG, JPG, GIF)</p>
+                    <p className="text-xs text-gray-600 mt-2\">Upload your product images individually (PNG, JPG, GIF - max 5MB each)</p>
+                  </div>
                   <input
                     type="number"
                     value={productForm.stock}
@@ -519,6 +531,11 @@ const AdminDashboard = () => {
                           category: '',
                           image: '',
                           stock: '',
+                          image1: null,
+                          image2: null,
+                          image3: null,
+                          image4: null,
+                          image5: null,
                           files: []
                         });
                       }}
@@ -583,6 +600,11 @@ const AdminDashboard = () => {
                                 category: product.category || '',
                                 image: product.image || (product.images && product.images[0]) || '',
                                 stock: product.stock || '',
+                                image1: null,
+                                image2: null,
+                                image3: null,
+                                image4: null,
+                                image5: null,
                                 files: []
                               });
                             }}

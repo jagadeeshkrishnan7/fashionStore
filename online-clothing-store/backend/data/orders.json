@@ -88,7 +88,7 @@
       }
     ],
     "totalAmount": 2697,
-    "status": "confirmed",
+    "status": "pending",
     "paymentMethod": "PhonePe",
     "paymentScreenshot": "/payments/payment-1773146479804-Screenshot 2026-02-25 201605.png",
     "createdAt": "2026-03-10T12:40:46.128Z"
@@ -136,9 +136,9 @@
       }
     ],
     "totalAmount": 2997,
-    "status": "confirmed",
-    "paymentMethod": "PhonePe",
-    "paymentScreenshot": "http://localhost:5000/payments/payment-1773151152418-Screenshot 2026-02-25 201605.png",
+    "status": "pending",
+    "paymentMethod": null,
+    "paymentScreenshot": null,
     "createdAt": "2026-03-10T13:51:46.238Z"
   },
   {
@@ -185,20 +185,9 @@
         "createdAt": "2026-03-01T10:15:00Z",
         "updatedAt": "2026-03-10T13:49:44.279Z",
         "quantity": 1
-      },
-      {
-        "id": 3,
-        "name": "Black Denim Jeans",
-        "description": "Classic black denim jeans with comfortable fit",
-        "price": 1299,
-        "category": "Jeans",
-        "image": "/images/products/black-jeans.jpg",
-        "stock": 45,
-        "createdAt": "2026-03-01T10:30:00Z",
-        "quantity": 1
       }
     ],
-    "totalAmount": 2198,
+    "totalAmount": 899,
     "status": "confirmed",
     "paymentMethod": "PhonePe",
     "paymentScreenshot": "http://localhost:5000/payments/payment-1773151649299-Screenshot 2026-02-25 201605.png",
