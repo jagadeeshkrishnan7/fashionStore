@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "adminpass"
+    }
+  ],
+  "upi": {
+    "phonepe": "store@upi",
+    "googlepay": "store@upi"
+  }
+}

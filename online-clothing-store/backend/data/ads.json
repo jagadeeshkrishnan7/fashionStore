@@ -1,0 +1,28 @@
+{
+  "banners": [
+    {
+      "id": 1,
+      "title": "Summer Collection 2026",
+      "image": "/images/ads/summer-banner.jpg",
+      "link": "#",
+      "active": true,
+      "createdAt": "2026-03-01T08:00:00Z"
+    },
+    {
+      "id": 2,
+      "title": "New Arrivals",
+      "image": "/images/ads/new-arrivals.jpg",
+      "link": "#",
+      "active": true,
+      "createdAt": "2026-03-01T08:15:00Z"
+    },
+    {
+      "id": 3,
+      "title": "50% Off Sale",
+      "image": "/images/ads/sale-banner.jpg",
+      "link": "#",
+      "active": true,
+      "createdAt": "2026-03-01T08:30:00Z"
+    }
+  ]
+}

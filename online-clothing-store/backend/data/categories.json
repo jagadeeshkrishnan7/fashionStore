@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "T-Shirts",
+    "icon": "👕",
+    "image": "/images/categories/tshirts.jpg",
+    "createdAt": "2026-03-01T09:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Shirts",
+    "icon": "👔",
+    "image": "/images/categories/shirts.jpg",
+    "createdAt": "2026-03-01T09:15:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Jeans",
+    "icon": "👖",
+    "image": "/images/categories/jeans.jpg",
+    "createdAt": "2026-03-01T09:30:00Z"
+  },
+  {
+    "id": 4,
+    "name": "Dresses",
+    "icon": "👗",
+    "image": "/images/categories/dresses.jpg",
+    "createdAt": "2026-03-01T09:45:00Z"
+  },
+  {
+    "id": 5,
+    "name": "Shorts",
+    "icon": "🩳",
+    "image": "/images/categories/shorts.jpg",
+    "createdAt": "2026-03-01T10:00:00Z"
+  },
+  {
+    "id": 6,
+    "name": "Blazers",
+    "icon": "🧥",
+    "image": "/images/categories/blazers.jpg",
+    "createdAt": "2026-03-01T10:15:00Z"
+  }
+]

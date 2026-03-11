@@ -1,0 +1,22 @@
+{
+  "storeName": "MY FASHION STORE",
+  "watermarkText": "J",
+  "backgroundColor": "#f7f3f3",
+  "colors": {
+    "primary": "#141414",
+    "secondary": "#666666",
+    "accent": "#ff0000",
+    "background": "#ffffff",
+    "text": "#000000",
+    "lightText": "#666666"
+  },
+  "fonts": {
+    "primary": "Inter",
+    "secondary": "Poppins"
+  },
+  "contact": {
+    "email": "info@fashionstore.com",
+    "phone": "+1 800-FASHION",
+    "address": "123 Fashion Ave, City, Country"
+  }
+}

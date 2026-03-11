@@ -1,0 +1,11 @@
+node_modules/
+.vite/
+dist/
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+uploads/payments/
+*.pyc
+package-lock.json

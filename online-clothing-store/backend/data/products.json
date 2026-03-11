@@ -1,0 +1,84 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Blue T-Shirt test",
+    "description": "High-quality cotton t-shirt perfect for everyday wear",
+    "price": 499,
+    "category": "T-Shirts",
+    "image": "/images/products/prod-1773149846401.png",
+    "stock": "50",
+    "createdAt": "2026-03-01T10:00:00Z",
+    "updatedAt": "2026-03-10T13:37:26.407Z"
+  },
+  {
+    "id": 2,
+    "name": "Premium Cotton Shirt",
+    "description": "Formal cotton shirt ideal for office and casual wear",
+    "price": 899,
+    "category": "Shirts",
+    "image": "http://localhost:5000/images/products/prod-1773150584271.png",
+    "stock": "30",
+    "createdAt": "2026-03-01T10:15:00Z",
+    "updatedAt": "2026-03-10T13:49:44.279Z"
+  },
+  {
+    "id": 3,
+    "name": "Black Denim Jeans",
+    "description": "Classic black denim jeans with comfortable fit",
+    "price": 1299,
+    "category": "Jeans",
+    "image": "/images/products/black-jeans.jpg",
+    "stock": 45,
+    "createdAt": "2026-03-01T10:30:00Z"
+  },
+  {
+    "id": 4,
+    "name": "Summer Dress",
+    "description": "Light and breezy summer dress perfect for hot days",
+    "price": 799,
+    "category": "Dresses",
+    "image": "/images/products/summer-dress.jpg",
+    "stock": 25,
+    "createdAt": "2026-03-01T10:45:00Z"
+  },
+  {
+    "id": 5,
+    "name": "Casual White Tee",
+    "description": "Pure white cotton t-shirt for casual outings",
+    "price": 399,
+    "category": "T-Shirts",
+    "image": "/images/products/white-tee.jpg",
+    "stock": 60,
+    "createdAt": "2026-03-01T11:00:00Z"
+  },
+  {
+    "id": 6,
+    "name": "Striped Polo Shirt",
+    "description": "Stylish striped polo shirt for casual and semi-formal occasions",
+    "price": 699,
+    "category": "Shirts",
+    "image": "/images/products/polo-shirt.jpg",
+    "stock": 40,
+    "createdAt": "2026-03-01T11:15:00Z"
+  },
+  {
+    "id": 7,
+    "name": "Women's Blazer",
+    "description": "Elegant women's blazer perfect for professional settings",
+    "price": 1599,
+    "category": "Blazers",
+    "image": "/images/products/womens-blazer.jpg",
+    "stock": 20,
+    "createdAt": "2026-03-01T11:30:00Z"
+  },
+  {
+    "id": 8,
+    "name": "Blue Shorts",
+    "description": "Comfortable blue shorts ideal for casual and sports wear",
+    "price": 549,
+    "category": "Shorts",
+    "image": "/images/products/blue-shorts.jpg",
+    "stock": 55,
+    "createdAt": "2026-03-01T11:45:00Z"
+  }
+]
