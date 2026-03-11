@@ -576,7 +576,15 @@ const AdminDashboard = () => {
                           <button
                             onClick={() => {
                               setEditingProduct(product);
-                              setProductForm(product);
+                              setProductForm({
+                                name: product.name || '',
+                                description: product.description || '',
+                                price: product.price || '',
+                                category: product.category || '',
+                                image: product.image || (product.images && product.images[0]) || '',
+                                stock: product.stock || '',
+                                files: []
+                              });
                             }}
                             className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
                           >
@@ -681,55 +689,191 @@ const AdminDashboard = () => {
               <h2 className="text-2xl font-bold mb-6">Manage Orders</h2>
               {editingOrder && (
                 <form onSubmit={handleUpdateOrder} className="mb-6 p-4 bg-gray-50 rounded-lg border">
-                  <h3 className="text-xl font-bold mb-4">Edit Order {editingOrder.orderNumber}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      value={orderForm.customerName}
-                      onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })}
-                      placeholder="Customer Name"
-                      className="px-3 py-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={orderForm.mobileNumber}
-                      onChange={(e) => setOrderForm({ ...orderForm, mobileNumber: e.target.value })}
-                      placeholder="Mobile Number"
-                      className="px-3 py-2 border rounded"
-                    />
-                    <input
-                      type="text"
-                      value={orderForm.address}
-                      onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
-                      placeholder="Address"
-                      className="px-3 py-2 border rounded"
-                    />
-                    <input
-                      type="number"
-                      value={orderForm.totalAmount}
-                      onChange={(e) => setOrderForm({ ...orderForm, totalAmount: e.target.value })}
-                      placeholder="Total Amount"
-                      className="px-3 py-2 border rounded"
-                    />
-                    <textarea
-                      value={orderForm.items}
-                      onChange={(e) => setOrderForm({ ...orderForm, items: e.target.value })}
-                      placeholder="Items JSON"
-                      className="px-3 py-2 border rounded col-span-2"
-                      rows={4}
-                    />
+                  <h3 className="text-xl font-bold mb-6">Edit Order #{editingOrder.orderNumber}</h3>
+                  
+                  {/* Order Basic Details */}
+                  <div className="mb-6">
+                    <h4 className="font-bold text-lg mb-3 text-gray-700">Order Details</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
+                        <input
+                          type="text"
+                          value={editingOrder.orderNumber}
+                          disabled
+                          className="w-full px-3 py-2 border rounded bg-gray-200 text-gray-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Order Status</label>
+                        <select
+                          value={editingOrder.status}
+                          onChange={(e) => setEditingOrder({ ...editingOrder, status: e.target.value })}
+                          className="w-full px-3 py-2 border rounded"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Order Date</label>
+                        <input
+                          type="text"
+                          value={new Date(editingOrder.createdAt).toLocaleString()}
+                          disabled
+                          className="w-full px-3 py-2 border rounded bg-gray-200 text-gray-600"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2 mt-4">
+
+                  {/* Customer Details */}
+                  <div className="mb-6">
+                    <h4 className="font-bold text-lg mb-3 text-gray-700">Customer Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+                        <input
+                          type="text"
+                          value={orderForm.customerName}
+                          onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })}
+                          placeholder="Enter customer name"
+                          className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                        <input
+                          type="text"
+                          value={orderForm.mobileNumber}
+                          onChange={(e) => setOrderForm({ ...orderForm, mobileNumber: e.target.value })}
+                          placeholder="Enter mobile number"
+                          className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                          required
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+                        <textarea
+                          value={orderForm.address}
+                          onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
+                          placeholder="Enter delivery address"
+                          className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                          rows={2}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Items Section */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-bold text-lg text-gray-700">Order Items</h4>
+                      <button
+                        type="button"
+                        onClick={handleAddItem}
+                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                      >
+                        + Add Item
+                      </button>
+                    </div>
+                    
+                    {orderForm.items.length === 0 ? (
+                      <p className="text-gray-500 text-sm">No items added yet</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {orderForm.items.map((item, idx) => (
+                          <div key={item.id} className="p-3 bg-white border rounded-lg grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Item Name</label>
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => handleUpdateItem(item.id, 'name', e.target.value)}
+                                placeholder="Product name"
+                                className="w-full px-2 py-2 border rounded text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                value={item.price}
+                                onChange={(e) => handleUpdateItem(item.id, 'price', e.target.value)}
+                                placeholder="0.00"
+                                step="0.01"
+                                className="w-full px-2 py-2 border rounded text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Quantity</label>
+                              <input
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => handleUpdateItem(item.id, 'quantity', e.target.value)}
+                                placeholder="1"
+                                min="1"
+                                className="w-full px-2 py-2 border rounded text-sm"
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <div className="flex-1">
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Subtotal (₹)</label>
+                                <input
+                                  type="text"
+                                  value={(item.price * item.quantity).toFixed(2)}
+                                  disabled
+                                  className="w-full px-2 py-2 border rounded bg-gray-100 text-sm"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveItem(item.id)}
+                                className="bg-red-500 text-white px-3 py-2 rounded text-sm hover:bg-red-600 h-fit"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Total Amount */}
+                  <div className="mb-6">
+                    <h4 className="font-bold text-lg mb-3 text-gray-700">Order Summary</h4>
+                    <div className="p-3 bg-white border-2 border-blue-500 rounded-lg">
+                      <div className="text-right">
+                        <span className="text-lg font-bold">Total Amount: ₹</span>
+                        <input
+                          type="number"
+                          value={orderForm.totalAmount}
+                          onChange={(e) => setOrderForm({ ...orderForm, totalAmount: e.target.value })}
+                          className="ml-2 px-3 py-2 border rounded text-lg font-bold w-auto inline-block"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-6">
                     <button
                       type="submit"
-                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                      className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 font-bold"
                     >
-                      Save
+                      Save Changes
                     </button>
                     <button
                       type="button"
                       onClick={handleCancelEdit}
-                      className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                      className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 font-bold"
                     >
                       Cancel
                     </button>
