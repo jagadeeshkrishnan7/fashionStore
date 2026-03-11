@@ -33,7 +33,7 @@ function App() {
 
   return (
     <CartProvider>
-      <Router basename="/fashionStore/">
+      <Router>
         <div style={{ backgroundColor: theme?.backgroundColor || '#ffffff' }}>
           <Routes>
             {/* Admin routes without navbar */}
