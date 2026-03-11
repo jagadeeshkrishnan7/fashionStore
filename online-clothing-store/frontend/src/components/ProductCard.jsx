@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import SwiperCore from 'swiper';
+import { Navigation, Pagination, Autoplay } from 'swiper';
 import { IMAGE_BASE } from '../services/api';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+
+SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -38,7 +41,6 @@ const ProductCard = ({ product }) => {
       <div className="relative bg-gray-200 h-48 group">
         {images.length > 0 ? (
           <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={0}
             slidesPerView={1}
             navigation={images.length > 1}
