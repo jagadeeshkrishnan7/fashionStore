@@ -18,7 +18,20 @@ const productStorage = multer.diskStorage({
     cb(null, uniqueName);
   }
 });
-const uploadProductImage = multer({ storage: productStorage });
+const uploadProductImage = multer({ 
+  storage: productStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per file
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // helper to convert relative path to absolute URL based on request
 const makeUrl = (req, relPath) => {
@@ -55,17 +68,22 @@ router.get('/category/:category', (req, res) => {
   res.json(filtered);
 });
 
-// POST add product (admin)
-router.post('/add', uploadProductImage.single('image'), (req, res) => {
+// POST add product (admin) - supports single or multiple images
+router.post('/add', uploadProductImage.array('images', 5), (req, res) => {
   try {
     const { name, description, price, category, stock } = req.body;
-    let imageUrl = '';
-    if (req.file) {
-      // saved under /images/products
-      imageUrl = `/images/products/${req.file.filename}`;
-      imageUrl = makeUrl(req, imageUrl);
-    } else if (req.body.image) {
-      imageUrl = req.body.image;
+    let imageUrls = [];
+
+    // Handle multiple files
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map(file => 
+        makeUrl(req, `/images/products/${file.filename}`)
+      );
+    } else if (req.body.images) {
+      // Handle images passed as string array
+      imageUrls = Array.isArray(req.body.images) 
+        ? req.body.images 
+        : [req.body.images];
     }
 
     if (!name || !price || !category) {
@@ -79,7 +97,8 @@ router.post('/add', uploadProductImage.single('image'), (req, res) => {
       description: description || '',
       price: parseFloat(price),
       category,
-      image: imageUrl,
+      images: imageUrls,
+      image: imageUrls[0] || '', // Keep backward compatibility
       stock: stock || 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -93,16 +112,20 @@ router.post('/add', uploadProductImage.single('image'), (req, res) => {
   }
 });
 
-// PUT update product (admin)
-router.put('/update/:id', uploadProductImage.single('image'), (req, res) => {
+// PUT update product (admin) - supports single or multiple images
+router.put('/update/:id', uploadProductImage.array('images', 5), (req, res) => {
   try {
     const { name, description, price, category, stock } = req.body;
-    let imageUrl;
-    if (req.file) {
-      imageUrl = `/images/products/${req.file.filename}`;
-      imageUrl = makeUrl(req, imageUrl);
-    } else if (req.body.image) {
-      imageUrl = req.body.image;
+    let imageUrls;
+
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map(file => 
+        makeUrl(req, `/images/products/${file.filename}`)
+      );
+    } else if (req.body.images) {
+      imageUrls = Array.isArray(req.body.images) 
+        ? req.body.images 
+        : [req.body.images];
     }
 
     const products = readProducts();
@@ -112,17 +135,23 @@ router.put('/update/:id', uploadProductImage.single('image'), (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    products[index] = {
+    const updatedProduct = {
       ...products[index],
       name: name || products[index].name,
       description: description || products[index].description,
       price: price !== undefined ? parseFloat(price) : products[index].price,
       category: category || products[index].category,
-      image: imageUrl || products[index].image,
       stock: stock !== undefined ? stock : products[index].stock,
       updatedAt: new Date().toISOString()
     };
 
+    // Update images if provided
+    if (imageUrls && imageUrls.length > 0) {
+      updatedProduct.images = imageUrls;
+      updatedProduct.image = imageUrls[0]; // Keep backward compatibility
+    }
+
+    products[index] = updatedProduct;
     writeProducts(products);
     res.json(products[index]);
   } catch (error) {

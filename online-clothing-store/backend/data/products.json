@@ -1,14 +1,15 @@
 [
   {
     "id": 1,
-    "name": "Classic Blue T-Shirt test",
+    "name": "Classic Blue T-Shirt",
     "description": "High-quality cotton t-shirt perfect for everyday wear",
     "price": 499,
     "category": "T-Shirts",
-    "image": "/images/products/prod-1773149846401.png",
+    "images": ["http://localhost:5000/images/products/prod-1773260003713.jpg"],
+    "image": "http://localhost:5000/images/products/prod-1773260003713.jpg",
     "stock": "50",
     "createdAt": "2026-03-01T10:00:00Z",
-    "updatedAt": "2026-03-10T13:37:26.407Z"
+    "updatedAt": "2026-03-11T20:13:23.788Z"
   },
   {
     "id": 2,
@@ -16,10 +17,11 @@
     "description": "Formal cotton shirt ideal for office and casual wear",
     "price": 899,
     "category": "Shirts",
-    "image": "http://localhost:5000/images/products/prod-1773150584271.png",
+    "images": ["http://localhost:5000/images/products/prod-1773260090997.jpg"],
+    "image": "http://localhost:5000/images/products/prod-1773260090997.jpg",
     "stock": "30",
     "createdAt": "2026-03-01T10:15:00Z",
-    "updatedAt": "2026-03-10T13:49:44.279Z"
+    "updatedAt": "2026-03-11T20:14:51.012Z"
   },
   {
     "id": 3,
@@ -27,6 +29,7 @@
     "description": "Classic black denim jeans with comfortable fit",
     "price": 1299,
     "category": "Jeans",
+    "images": ["/images/products/black-jeans.jpg"],
     "image": "/images/products/black-jeans.jpg",
     "stock": 45,
     "createdAt": "2026-03-01T10:30:00Z"
@@ -37,6 +40,7 @@
     "description": "Light and breezy summer dress perfect for hot days",
     "price": 799,
     "category": "Dresses",
+    "images": ["/images/products/summer-dress.jpg"],
     "image": "/images/products/summer-dress.jpg",
     "stock": 25,
     "createdAt": "2026-03-01T10:45:00Z"
@@ -47,6 +51,7 @@
     "description": "Pure white cotton t-shirt for casual outings",
     "price": 399,
     "category": "T-Shirts",
+    "images": ["/images/products/white-tee.jpg"],
     "image": "/images/products/white-tee.jpg",
     "stock": 60,
     "createdAt": "2026-03-01T11:00:00Z"
@@ -57,6 +62,7 @@
     "description": "Stylish striped polo shirt for casual and semi-formal occasions",
     "price": 699,
     "category": "Shirts",
+    "images": ["/images/products/polo-shirt.jpg"],
     "image": "/images/products/polo-shirt.jpg",
     "stock": 40,
     "createdAt": "2026-03-01T11:15:00Z"
@@ -67,6 +73,7 @@
     "description": "Elegant women's blazer perfect for professional settings",
     "price": 1599,
     "category": "Blazers",
+    "images": ["/images/products/womens-blazer.jpg"],
     "image": "/images/products/womens-blazer.jpg",
     "stock": 20,
     "createdAt": "2026-03-01T11:30:00Z"
@@ -77,6 +84,7 @@
     "description": "Comfortable blue shorts ideal for casual and sports wear",
     "price": 549,
     "category": "Shorts",
+    "images": ["/images/products/blue-shorts.jpg"],
     "image": "/images/products/blue-shorts.jpg",
     "stock": 55,
     "createdAt": "2026-03-01T11:45:00Z"
