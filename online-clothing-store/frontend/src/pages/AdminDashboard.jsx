@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     category: '',
     image: '',
     stock: '',
-    file: null
+    files: []
   });
   const [categoryForm, setCategoryForm] = useState({ name: '', icon: '', image: '', file: null });
   const [themeForm, setThemeForm] = useState({});
@@ -178,11 +178,14 @@ const AdminDashboard = () => {
     try {
       const formData = new FormData();
       Object.entries(productForm).forEach(([key, value]) => {
-        if (key === 'file') return;
+        if (key === 'files') return;
         formData.append(key, value);
       });
-      if (productForm.file) {
-        formData.append('image', productForm.file);
+      // Add multiple files
+      if (productForm.files && productForm.files.length > 0) {
+        productForm.files.forEach((file) => {
+          formData.append('images', file);
+        });
       }
       await addProduct(formData);
       setProductForm({
@@ -192,7 +195,7 @@ const AdminDashboard = () => {
         category: '',
         image: '',
         stock: '',
-        file: null
+        files: []
       });
       loadData();
       alert('Product added successfully!');
@@ -206,11 +209,14 @@ const AdminDashboard = () => {
     try {
       const formData = new FormData();
       Object.entries(productForm).forEach(([key, value]) => {
-        if (key === 'file') return;
+        if (key === 'files') return;
         formData.append(key, value);
       });
-      if (productForm.file) {
-        formData.append('image', productForm.file);
+      // Add multiple files
+      if (productForm.files && productForm.files.length > 0) {
+        productForm.files.forEach((file) => {
+          formData.append('images', file);
+        });
       }
       await updateProduct(editingProduct.id, formData);
       setProductForm({
@@ -220,7 +226,7 @@ const AdminDashboard = () => {
         category: '',
         image: '',
         stock: '',
-        file: null
+        files: []
       });
       setEditingProduct(null);
       loadData();
@@ -434,45 +440,58 @@ const AdminDashboard = () => {
                       </option>
                     ))}
                   </select>
-                  {/* preview current or selected image */}
-                  {(productForm.image || productForm.file) && (
-                    <div className="mb-2">
-                      <p className="text-sm font-medium">Current image preview:</p>
-                      <img
-                        src={
-                          productForm.file
-                            ? URL.createObjectURL(productForm.file)
-                            : productForm.image
-                        }
-                        alt="preview"
-                        className="w-24 h-24 object-cover rounded"
-                      />
-                      {productForm.image && !productForm.file && (
-                        <div>
-                          <a
-                            href={productForm.image}
-                            download
-                            className="text-xs text-blue-600 hover:underline"
-                          >
-                            Download current image
-                          </a>
-                        </div>
-                      )}
+                  {/* preview current or selected images */}
+                  {(productForm.image || productForm.files.length > 0) && (
+                    <div className="md:col-span-2">
+                      <p className="text-sm font-medium mb-2">Image Previews (Up to 5):</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {/* Show selected images */}
+                        {productForm.files.map((file, idx) => (
+                          <div key={idx} className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`preview ${idx + 1}`}
+                              className="w-24 h-24 object-cover rounded"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFiles = productForm.files.filter((_, i) => i !== idx);
+                                setProductForm({ ...productForm, files: newFiles });
+                              }}
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              ✕
+                            </button>
+                            <span className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded-tr">{idx + 1}</span>
+                          </div>
+                        ))}
+                        {/* Show existing image if editing */}
+                        {editingProduct && productForm.image && productForm.files.length === 0 && (
+                          <div>
+                            <img
+                              src={productForm.image + (editingProduct.updatedAt ? `?v=${new Date(editingProduct.updatedAt).getTime()}` : '')}
+                              alt="current"
+                              className="w-24 h-24 object-cover rounded border-2 border-blue-500"
+                            />
+                            <span className="text-xs text-gray-600">Current</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                   <input
-                    type="text"
-                    value={productForm.image}
-                    onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                    placeholder="Image URL"
-                    className="px-3 py-2 border rounded"
-                  />
-                  <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setProductForm({ ...productForm, file: e.target.files[0] })}
-                    className="px-3 py-2 border rounded"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []).slice(0, 5);
+                      setProductForm({ ...productForm, files });
+                    }}
+                    className="px-3 py-2 border rounded md:col-span-2"
+                    placeholder="Select up to 5 images"
                   />
+                  <p className="text-xs text-gray-600 md:col-span-2">Upload up to 5 images for the product (PNG, JPG, GIF)</p>
                   <input
                     type="number"
                     value={productForm.stock}
@@ -499,7 +518,8 @@ const AdminDashboard = () => {
                           price: '',
                           category: '',
                           image: '',
-                          stock: ''
+                          stock: '',
+                          files: []
                         });
                       }}
                       className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
@@ -527,29 +547,25 @@ const AdminDashboard = () => {
                     {products.map((product) => (
                       <tr key={product.id} className="border-b hover:bg-gray-50">
                         <td className="p-2">
-                          {product.image ? (
-                            <div className="flex items-center gap-2">
-                              <img
-                                src={
-                                  product.image +
-                                  (product.updatedAt ? `?v=${new Date(product.updatedAt).getTime()}` : '')
-                                }
-                                alt={product.name}
-                                className="w-16 h-16 object-cover rounded"
-                              />
-                              <a
-                                href={
-                                  product.image +
-                                  (product.updatedAt ? `?v=${new Date(product.updatedAt).getTime()}` : '')
-                                }
-                                download
-                                className="text-xs text-blue-600 hover:underline"
-                              >
-                                Download
-                              </a>
+                          {(product.images && product.images.length > 0) || product.image ? (
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {(product.images || [product.image]).map((img, idx) => (
+                                <div key={idx} className="relative">
+                                  <img
+                                    src={
+                                      img +
+                                      (product.updatedAt ? `?v=${new Date(product.updatedAt).getTime()}` : '')
+                                    }
+                                    alt={`${product.name} ${idx + 1}`}
+                                    className="w-12 h-12 object-cover rounded"
+                                    title={`Image ${idx + 1}`}
+                                  />
+                                  <span className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded-tl">{idx + 1}</span>
+                                </div>
+                              ))}
                             </div>
                           ) : (
-                            <span className="text-gray-500">No image</span>
+                            <span className="text-gray-500">No images</span>
                           )}
                         </td>
                         <td className="p-2">{product.name}</td>
